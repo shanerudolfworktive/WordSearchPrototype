@@ -3,7 +3,6 @@ package com.rudolf.shane.duolingochallenger.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,7 +18,7 @@ import com.rudolf.shane.duolingochallenger.base.BaseFragment;
  */
 public class FragmentGamePlayMain extends BaseFragment{
 
-    String[][] gamePadData = {{"1", "2", "3"}, {"4","5","6"}};
+    String[][] gamePadData = {{"1", "2", "3", "4", "5", "6", "7"}, {"1", "2", "3", "4", "5", "6", "7"},{"1", "2", "3", "4", "5", "6", "7"},{"1", "2", "3", "4", "5", "6", "7"},{"1", "2", "3", "4", "5", "6", "7"},{"1", "2", "3", "4", "5", "6", "7"},{"1", "2", "3", "4", "5", "6", "7"}};
 
     //clone constructor
     public static FragmentGamePlayMain create(String[][] gamePadData){
@@ -39,11 +38,8 @@ public class FragmentGamePlayMain extends BaseFragment{
             row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
 
             for (int j = 0; j < gamePadData[0].length; j++ ){
-                TextView textView = new TextView(getActivity());
+                TextView textView = (TextView) inflater.inflate(R.layout.text_view_game_pad, rootView, false);
                 textView.setText(gamePadData[i][j]);
-                textView.setGravity(Gravity.CENTER);
-
-                textView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
                 row.addView(textView);
             }
             rootView.addView(row);
