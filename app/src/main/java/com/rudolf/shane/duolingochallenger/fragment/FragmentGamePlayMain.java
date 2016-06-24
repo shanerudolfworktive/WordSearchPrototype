@@ -72,7 +72,7 @@ public class FragmentGamePlayMain extends BaseFragment{
                     TextView endPointTextView = getIntersectedTextView(point);
                     if (endPointTextView == null || endPointTextView == touchDownTextView) return true;
                     Coor endCoor = textViewToCoorMap.get(endPointTextView);
-                    Log.e("shaneTest", "size = " + textViewToCoorMap.size() + "; endPointTextView = " + endPointTextView + "; touchDownTextView" + touchDownTextView);
+                    Log.e("shaneTest", "size = " + textViewToCoorMap.size() + "; endPointTextView = " + endPointTextView + "; touchDownTextView = " + touchDownTextView);
                     if (textViewToCoorMap.get(endPointTextView).x == touchDownCoor.x){
                         clearSelection();
                         for (int y = Math.min(touchDownCoor.y, endCoor.y); y<=Math.max(touchDownCoor.y, endCoor.y); y++) {
@@ -94,7 +94,7 @@ public class FragmentGamePlayMain extends BaseFragment{
 
     protected void clearSelection(){
         for (TextView textView: coorToTextViewMap.values()) {
-            textView.setBackgroundResource(R.color.colorGreen);
+            textView.setBackgroundResource(R.drawable.drawable_game_button_background);
         }
     }
 
