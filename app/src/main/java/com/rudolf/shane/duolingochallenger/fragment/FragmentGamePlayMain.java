@@ -2,6 +2,7 @@ package com.rudolf.shane.duolingochallenger.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -66,16 +67,22 @@ public class FragmentGamePlayMain extends BaseFragment{
                     touchDownTextView = getIntersectedTextView(point);
                     touchDownCoor = textViewToCoorMap.get(touchDownTextView);
                 }else if (event.getAction()==MotionEvent.ACTION_UP){
-                    for (TextView textView: coorToTextViewMap.values()) {
-                        textView.setBackgroundResource(R.color.colorGreen);
-                    }
+                    clearSelection();
                 }else if (event.getAction() == MotionEvent.ACTION_MOVE){
                     TextView endPointTextView = getIntersectedTextView(point);
-                    if (endPointTextView == null) return true;
+                    if (endPointTextView == null || endPointTextView == touchDownTextView) return true;
+                    Coor endCoor = textViewToCoorMap.get(endPointTextView);
+                    Log.e("shaneTest", "size = " + textViewToCoorMap.size() + "; endPointTextView = " + endPointTextView + "; touchDownTextView" + touchDownTextView);
                     if (textViewToCoorMap.get(endPointTextView).x == touchDownCoor.x){
-                        endPointTextView.setBackgroundResource(R.color.colorPrimaryDark);
+                        clearSelection();
+                        for (int y = Math.min(touchDownCoor.y, endCoor.y); y<=Math.max(touchDownCoor.y, endCoor.y); y++) {
+                            coorToTextViewMap.get(new Coor(touchDownCoor.x, y)).setBackgroundResource(R.color.colorPrimaryDark);
+                        }
                     }else if (textViewToCoorMap.get(endPointTextView).y == touchDownCoor.y){
-                        endPointTextView.setBackgroundResource(R.color.colorPrimaryDark);
+                        clearSelection();
+                        for (int x = Math.min(touchDownCoor.x, endCoor.x); x<=Math.max(touchDownCoor.x, endCoor.x); x++) {
+                            coorToTextViewMap.get(new Coor(x, touchDownCoor.y)).setBackgroundResource(R.color.colorPrimaryDark);
+                        }
                     }
                 }
 
@@ -83,6 +90,12 @@ public class FragmentGamePlayMain extends BaseFragment{
             }
         });
         return rootView;
+    }
+
+    protected void clearSelection(){
+        for (TextView textView: coorToTextViewMap.values()) {
+            textView.setBackgroundResource(R.color.colorGreen);
+        }
     }
 
     protected TextView getIntersectedTextView(Point point){
