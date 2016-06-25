@@ -16,6 +16,8 @@ import com.rudolf.shane.duolingochallenger.base.BaseFragment;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * Created by shane on 6/24/16.
@@ -58,6 +60,15 @@ public class FragmentGamePlayMain extends BaseFragment{
             TextView startTextView;
             Coor startCoor;
             StringBuilder stringBuilder;
+            HashSet<TextView> selectedTextViewSet = new HashSet<TextView>();
+
+            private void clearSelectedView(){
+                for (Iterator<TextView> iterator = selectedTextViewSet.iterator(); iterator.hasNext();) {
+                    iterator.next().setBackgroundResource(R.drawable.drawable_game_button_background);
+                    iterator.remove();
+                }
+            }
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Point point = new Point(event.getRawX(), event.getRawY());
@@ -71,34 +82,42 @@ public class FragmentGamePlayMain extends BaseFragment{
                     startCoor = textViewToCoorMap.get(startTextView);
                     startTextView.setBackgroundResource(R.color.colorPrimaryDark);
                 }else if (event.getAction()==MotionEvent.ACTION_UP){
-                    clearSelection();
+                    clearSelectedView();
                 }else if (event.getAction() == MotionEvent.ACTION_MOVE){
                     TextView endPointTextView = getIntersectedTextView(point);
                     Coor endCoor = textViewToCoorMap.get(endPointTextView);
                     if (endCoor.x == startCoor.x){//highlight vertical
-                        clearSelection();
+                        clearSelectedView();
                         for (int y = Math.min(startCoor.y, endCoor.y); y<=Math.max(startCoor.y, endCoor.y); y++) {
-                            coorToTextViewMap.get(new Coor(startCoor.x, y)).setBackgroundResource(R.color.colorPrimaryDark);
+                            TextView selectedTextView = coorToTextViewMap.get(new Coor(startCoor.x, y));
+                            selectedTextViewSet.add(selectedTextView);
+                            selectedTextView.setBackgroundResource(R.color.colorPrimaryDark);
                         }
                     }else if (endCoor.y == startCoor.y){//highlight horizontal
-                        clearSelection();
+                        clearSelectedView();
                         for (int x = Math.min(startCoor.x, endCoor.x); x<=Math.max(startCoor.x, endCoor.x); x++) {
-                            coorToTextViewMap.get(new Coor(x, startCoor.y)).setBackgroundResource(R.color.colorPrimaryDark);
+                            TextView selectedTextView = coorToTextViewMap.get(new Coor(x, startCoor.y));
+                            selectedTextViewSet.add(selectedTextView);
+                            selectedTextView.setBackgroundResource(R.color.colorPrimaryDark);
                         }
                     }else if (((float)startCoor.y - (float)endCoor.y)/((float)startCoor.x - (float)endCoor.x) == 1f){//highlight positive slope
-                        clearSelection();
+                        clearSelectedView();
                         int startX = Math.min(startCoor.x, endCoor.x);
                         int startY = Math.min(startCoor.y, endCoor.y);
 
                         while (startX<=Math.max(startCoor.x, endCoor.x)){
-                            coorToTextViewMap.get(new Coor(startX++, startY++)).setBackgroundResource(R.color.colorPrimaryDark);
+                            TextView selectedTextView = coorToTextViewMap.get(new Coor(startX++, startY++));
+                            selectedTextViewSet.add(selectedTextView);
+                            selectedTextView.setBackgroundResource(R.color.colorPrimaryDark);
                         }
                     }else if (((float)startCoor.y - (float)endCoor.y)/((float)startCoor.x - (float)endCoor.x) == -1f){//highlight negative slope
-                        clearSelection();
+                        clearSelectedView();
                         int startX = Math.max(startCoor.x, endCoor.x);
                         int startY = Math.min(startCoor.y, endCoor.y);
                         while (startX>=Math.min(startCoor.x, endCoor.x)){
-                            coorToTextViewMap.get(new Coor(startX--, startY++)).setBackgroundResource(R.color.colorPrimaryDark);
+                            TextView selectedTextView = coorToTextViewMap.get(new Coor(startX--, startY++));
+                            selectedTextViewSet.add(selectedTextView);
+                            selectedTextView.setBackgroundResource(R.color.colorPrimaryDark);
                         }
                     }
                 }
@@ -108,11 +127,11 @@ public class FragmentGamePlayMain extends BaseFragment{
         return rootView;
     }
 
-    protected void clearSelection(){
-        for (TextView textView: coorToTextViewMap.values()) {
-            textView.setBackgroundResource(R.drawable.drawable_game_button_background);
-        }
-    }
+//    protected void clearSelection(){
+//        for (TextView textView: coorToTextViewMap.values()) {
+//            textView.setBackgroundResource(R.drawable.drawable_game_button_background);
+//        }
+//    }
 
     protected TextView getIntersectedTextView(Point point){
         for (TextView textView: coorToTextViewMap.values()) {
