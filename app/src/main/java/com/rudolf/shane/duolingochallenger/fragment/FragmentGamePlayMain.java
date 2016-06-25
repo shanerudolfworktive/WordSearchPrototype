@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 
 /**
  * Created by shane on 6/24/16.
@@ -26,12 +27,16 @@ public class FragmentGamePlayMain extends BaseFragment{
     ArrayList<ArrayList<String>> gamePadData;
     HashMap<Coor, TextView> coorToTextViewMap = new HashMap<>();
     HashMap<TextView, Coor> textViewToCoorMap = new HashMap<>();
-
+    OnWordSelectedListener onWordSelectedListener;
     //clone constructor
     public static FragmentGamePlayMain create(ArrayList<ArrayList<String>> gamePadData){
         FragmentGamePlayMain fragment = new FragmentGamePlayMain();
         fragment.gamePadData = gamePadData;//small data just cached in memory instead putting in bundle
         return fragment;
+    }
+
+    public void setOnWordSelectedListen(OnWordSelectedListener onWordSelectedListener){
+        this.onWordSelectedListener = onWordSelectedListener;
     }
 
     @Nullable
@@ -59,12 +64,12 @@ public class FragmentGamePlayMain extends BaseFragment{
             Point startPoint;
             TextView startTextView;
             Coor startCoor;
-            StringBuilder stringBuilder;
-            HashSet<TextView> selectedTextViewSet = new HashSet<TextView>();
-
+            LinkedHashSet<TextView> selectedTextViewSet = new LinkedHashSet<>();
+            HashSet<TextView> correctTextViewSet = new HashSet<>();
             private void clearSelectedView(){
                 for (Iterator<TextView> iterator = selectedTextViewSet.iterator(); iterator.hasNext();) {
-                    iterator.next().setBackgroundResource(R.drawable.drawable_game_button_background);
+                    TextView textView = iterator.next();
+                    if (!correctTextViewSet.contains(textView)) textView.setBackgroundResource(R.drawable.drawable_game_button_background);
                     iterator.remove();
                 }
             }
@@ -73,7 +78,6 @@ public class FragmentGamePlayMain extends BaseFragment{
             public boolean onTouch(View v, MotionEvent event) {
                 Point point = new Point(event.getRawX(), event.getRawY());
                 if (getIntersectedTextView(point) == null){
-                    Log.e("shaneTest", "getIntersectedTextView return null");
                     return true;
                 }
                 if (event.getAction() == MotionEvent.ACTION_DOWN){
@@ -82,6 +86,16 @@ public class FragmentGamePlayMain extends BaseFragment{
                     startCoor = textViewToCoorMap.get(startTextView);
                     startTextView.setBackgroundResource(R.color.colorPrimaryDark);
                 }else if (event.getAction()==MotionEvent.ACTION_UP){
+                    StringBuilder sb= new StringBuilder();
+                    for (TextView textView: selectedTextViewSet) {
+                        sb.append(textView.getText().toString());
+                    }
+                    Log.e("shaneTest", sb.toString());
+                    if(onWordSelectedListener!=null) {
+                        if (onWordSelectedListener.onWordSelected(sb.toString())){
+                            for (TextView textView: selectedTextViewSet) correctTextViewSet.add(textView);
+                        }
+                    }
                     clearSelectedView();
                 }else if (event.getAction() == MotionEvent.ACTION_MOVE){
                     TextView endPointTextView = getIntersectedTextView(point);
@@ -127,12 +141,6 @@ public class FragmentGamePlayMain extends BaseFragment{
         return rootView;
     }
 
-//    protected void clearSelection(){
-//        for (TextView textView: coorToTextViewMap.values()) {
-//            textView.setBackgroundResource(R.drawable.drawable_game_button_background);
-//        }
-//    }
-
     protected TextView getIntersectedTextView(Point point){
         for (TextView textView: coorToTextViewMap.values()) {
             if (isPointInsideView(point, textView)) return textView;
@@ -154,7 +162,7 @@ public class FragmentGamePlayMain extends BaseFragment{
     }
 
     public interface OnWordSelectedListener{
-        void onWordSelected(String word);
+        boolean onWordSelected(String word);
     }
 
     private class Point{

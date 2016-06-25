@@ -17,15 +17,10 @@ public class GameDisplayResponseModel {
     @SerializedName("character_grid")
     public ArrayList<ArrayList<String>> characterGrid;
     @SerializedName("word_locations")
-    public WordLocation wordLocations;
+    public HashMap<String, String> wordLocations;
 
 //    public static class CharacterGrid{
 //        @SerializedName("character_grid")
 //        public ArrayList<String> characterGrid;
 //    }
-
-    public static class WordLocation{
-        @SerializedName("word_locations")
-        HashMap<String, String> wordLocations;
-    }
 }

@@ -38,10 +38,22 @@ public class FragmentSceneMain extends BaseFragment{
                 gameDataArrayList.clear();
                 for (String l: lines) {
                     GameDisplayResponseModel model = new Gson().fromJson(l, GameDisplayResponseModel.class);
+                    Log.e("shaneTest", "l=" + l);
                     gameDataArrayList.add(model);
                 }
 
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, FragmentGamePlayMain.create(gameDataArrayList.get(0).characterGrid)).commit();
+                FragmentGamePlayMain fragment = FragmentGamePlayMain.create(gameDataArrayList.get(0).characterGrid);
+                fragment.setOnWordSelectedListen(new FragmentGamePlayMain.OnWordSelectedListener() {
+                    @Override
+                    public boolean onWordSelected(String word) {
+                        for (String correctWord: gameDataArrayList.get(0).wordLocations.values()) {
+                            if (word.equals(correctWord)) return true;
+                        }
+                        return false;
+                    }
+                });
+
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, fragment).commit();
             }
         }, new Response.ErrorListener() {
             @Override
