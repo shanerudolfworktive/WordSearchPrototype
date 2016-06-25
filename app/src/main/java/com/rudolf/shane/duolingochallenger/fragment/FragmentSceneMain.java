@@ -1,7 +1,9 @@
 package com.rudolf.shane.duolingochallenger.fragment;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,14 +32,19 @@ public class FragmentSceneMain extends BaseFragment{
 
     private ArrayList<GameDisplayResponseModel> gameDataArrayList = new ArrayList<>();
 
-    StringRequest stringRequest;
     View.OnClickListener hintOnClickListener;
     TextView sourceWord;
+    AlertDialog.Builder replayDialogBuilder;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        stringRequest = new StringRequest(Request.Method.GET, Constants.URL_GAME_DATA, new Response.Listener<String>() {
+
+
+    }
+
+    private void fetchGameDataAnStartGame(){
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, Constants.URL_GAME_DATA, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 String lines[] = response.split("\\r?\\n");//split by new line
@@ -63,14 +70,14 @@ public class FragmentSceneMain extends BaseFragment{
                 Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-        requestToCancelOnDestroy.add(stringRequest);
+        VolleyHelper.getInstance(getActivity()).addToRequestQueue(stringRequest);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_scene_main, container, false);
-        VolleyHelper.getInstance(getActivity()).addToRequestQueue(stringRequest);
+
 
         //restore states
         if (hintOnClickListener != null) rootView.findViewById(R.id.buttonShowHint).setOnClickListener(hintOnClickListener);
@@ -79,6 +86,7 @@ public class FragmentSceneMain extends BaseFragment{
             textView.setText(sourceWord.getText().toString());
             sourceWord = textView;
         }
+        if (replayDialogBuilder!=null)replayDialogBuilder.show();
         return rootView;
     }
 
@@ -93,6 +101,7 @@ public class FragmentSceneMain extends BaseFragment{
             int hintCount = 1;
             @Override
             public void onClick(View v) {
+                if (!progressData.wordLocations.keySet().iterator().hasNext()) return;
                 String[] location = progressData.wordLocations.keySet().iterator().next().split(",");
                 if (hintCount == 1) {
                     fragment.highLightCell(Integer.parseInt(location[0]), Integer.parseInt(location[1]));
@@ -110,9 +119,9 @@ public class FragmentSceneMain extends BaseFragment{
             public boolean onWordSelected(String word) {
                 boolean foundCorrect = false;
 
-                for(Iterator<Map.Entry<String,String>> iterator = progressData.wordLocations.entrySet().iterator(); iterator.hasNext();){
-                    Map.Entry<String,String> entry = iterator.next();
-                    if (entry.getValue().equals(word)){
+                for (Iterator<Map.Entry<String, String>> iterator = progressData.wordLocations.entrySet().iterator(); iterator.hasNext(); ) {
+                    Map.Entry<String, String> entry = iterator.next();
+                    if (entry.getValue().equals(word)) {
                         foundCorrect = true;
                         iterator.remove();
                         break;
@@ -120,11 +129,27 @@ public class FragmentSceneMain extends BaseFragment{
                 }
 
                 if (progressData.wordLocations.isEmpty()) {
-                    displayGmaeData(progress+1);
+                    displayGmaeData(progress + 1);
+                }
+
+                if (progress + 1 >= gameDataArrayList.size()) {
+                    replayDialogBuilder = new AlertDialog.Builder(getActivity());
+                    replayDialogBuilder.setTitle(R.string.congratulations);
+                    replayDialogBuilder.setCancelable(false);
+                    replayDialogBuilder.setPositiveButton(R.string.next_level, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            replayDialogBuilder = null;
+                            fetchGameDataAnStartGame();
+                        }
+                    });
+                    replayDialogBuilder.show();
                 }
                 return foundCorrect;
             }
         });
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, fragment).commit();
     }
+
+
 }

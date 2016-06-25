@@ -3,4 +3,6 @@
     <string name="action_settings">Settings</string>
     <string name="sourceWord">Word: </string>
     <string name="showHint">Show Hint</string>
+    <string name="congratulations">Congratulations, you completed the game</string>
+    <string name="next_level">next level</string>
 </resources>
