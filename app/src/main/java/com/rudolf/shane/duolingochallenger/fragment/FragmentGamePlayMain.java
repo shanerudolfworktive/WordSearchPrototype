@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.rudolf.shane.duolingochallenger.R;
 import com.rudolf.shane.duolingochallenger.base.BaseFragment;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -20,13 +21,13 @@ import java.util.HashMap;
  */
 public class FragmentGamePlayMain extends BaseFragment{
 
-    String[][] gamePadData = {{"1", "2", "3", "4", "5", "6", "7"}, {"1", "2", "3", "4", "5", "6", "7"},{"1", "2", "3", "4", "5", "6", "7"},{"1", "2", "3", "4", "5", "6", "7"},{"1", "2", "3", "4", "5", "6", "7"},{"1", "2", "3", "4", "5", "6", "7"},{"1", "2", "3", "4", "5", "6", "7"}};
+    ArrayList<ArrayList<String>> gamePadData;
 
     HashMap<Coor, TextView> coorToTextViewMap = new HashMap<>();
     HashMap<TextView, Coor> textViewToCoorMap = new HashMap<>();
 
     //clone constructor
-    public static FragmentGamePlayMain create(String[][] gamePadData){
+    public static FragmentGamePlayMain create(ArrayList<ArrayList<String>> gamePadData){
         FragmentGamePlayMain fragment = new FragmentGamePlayMain();
         fragment.gamePadData = gamePadData;//small data just cached in memory instead putting in bundle
         return fragment;
@@ -37,14 +38,14 @@ public class FragmentGamePlayMain extends BaseFragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_game_play_main, container, false);
 
-        for (int i = 0; i < gamePadData.length; i++) {
+        for (int i = 0; i < gamePadData.size(); i++) {
 
             LinearLayout row = new LinearLayout(getActivity());
             row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
 
-            for (int j = 0; j < gamePadData[0].length; j++ ){
+            for (int j = 0; j < gamePadData.get(0).size(); j++ ){
                 TextView textView = (TextView) inflater.inflate(R.layout.text_view_game_pad, rootView, false);
-                textView.setText("" + i+","+j);
+                textView.setText(gamePadData.get(i).get(j));
                 row.addView(textView);
                 Coor coor = new Coor(i, j);
                 coorToTextViewMap.put(coor, textView);

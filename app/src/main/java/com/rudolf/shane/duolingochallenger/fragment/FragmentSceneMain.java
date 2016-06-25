@@ -12,15 +12,21 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.gson.Gson;
 import com.rudolf.shane.duolingochallenger.R;
 import com.rudolf.shane.duolingochallenger.base.BaseFragment;
+import com.rudolf.shane.duolingochallenger.model.GameDisplayResponseModel;
 import com.rudolf.shane.duolingochallenger.utils.Constants;
 import com.rudolf.shane.duolingochallenger.volley.VolleyHelper;
+
+import java.util.ArrayList;
 
 /**
  * Created by shane on 6/24/16.
  */
 public class FragmentSceneMain extends BaseFragment{
+
+    private ArrayList<GameDisplayResponseModel> gameDataArrayList = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,9 +35,13 @@ public class FragmentSceneMain extends BaseFragment{
             @Override
             public void onResponse(String response) {
                 String lines[] = response.split("\\r?\\n");//split by new line
+                gameDataArrayList.clear();
                 for (String l: lines) {
-                    Log.e("shaneTest", "line=" + l);
+                    GameDisplayResponseModel model = new Gson().fromJson(l, GameDisplayResponseModel.class);
+                    gameDataArrayList.add(model);
                 }
+
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, FragmentGamePlayMain.create(gameDataArrayList.get(0).characterGrid)).commit();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -42,7 +52,7 @@ public class FragmentSceneMain extends BaseFragment{
         });
         VolleyHelper.getInstance(getActivity()).addToRequestQueue(stringRequest);
 
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FragmentGamePlayMain()).commit();
+
     }
 
     @Nullable
