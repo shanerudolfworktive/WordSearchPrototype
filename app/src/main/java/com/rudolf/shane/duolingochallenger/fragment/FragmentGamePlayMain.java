@@ -28,6 +28,9 @@ public class FragmentGamePlayMain extends BaseFragment{
     HashMap<Coor, TextView> coorToTextViewMap = new HashMap<>();
     HashMap<TextView, Coor> textViewToCoorMap = new HashMap<>();
     OnWordSelectedListener onWordSelectedListener;
+    LinkedHashSet<TextView> selectedTextViewSet = new LinkedHashSet<>();
+    HashSet<TextView> correctTextViewSet = new HashSet<>();
+
     //clone constructor
     public static FragmentGamePlayMain create(ArrayList<ArrayList<String>> gamePadData){
         FragmentGamePlayMain fragment = new FragmentGamePlayMain();
@@ -37,6 +40,13 @@ public class FragmentGamePlayMain extends BaseFragment{
 
     public void setOnWordSelectedListen(OnWordSelectedListener onWordSelectedListener){
         this.onWordSelectedListener = onWordSelectedListener;
+    }
+
+    public void highLightCell(int x, int y){
+        TextView textView = coorToTextViewMap.get(new Coor(x,y));
+        if (textView == null) return;
+        textView.setBackgroundResource(R.color.colorPrimaryDark);
+        correctTextViewSet.add(textView);
     }
 
     @Nullable
@@ -53,7 +63,7 @@ public class FragmentGamePlayMain extends BaseFragment{
                 TextView textView = (TextView) inflater.inflate(R.layout.text_view_game_pad, rootView, false);
                 textView.setText(gamePadData.get(i).get(j));
                 row.addView(textView);
-                Coor coor = new Coor(i, j);
+                Coor coor = new Coor(j, i);
                 coorToTextViewMap.put(coor, textView);
                 textViewToCoorMap.put(textView,coor);
             }
@@ -64,8 +74,7 @@ public class FragmentGamePlayMain extends BaseFragment{
             Point startPoint;
             TextView startTextView;
             Coor startCoor;
-            LinkedHashSet<TextView> selectedTextViewSet = new LinkedHashSet<>();
-            HashSet<TextView> correctTextViewSet = new HashSet<>();
+
             private void clearSelectedView(){
                 for (Iterator<TextView> iterator = selectedTextViewSet.iterator(); iterator.hasNext();) {
                     TextView textView = iterator.next();

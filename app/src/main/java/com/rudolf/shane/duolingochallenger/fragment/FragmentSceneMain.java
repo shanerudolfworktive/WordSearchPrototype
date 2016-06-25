@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,11 +69,32 @@ public class FragmentSceneMain extends BaseFragment{
     }
 
     private void displayGmaeData(final int progress){
+        if (progress >= gameDataArrayList.size()) return;
         final GameDisplayResponseModel progressData = gameDataArrayList.get(progress);
         TextView sourceWord = (TextView) getView().findViewById(R.id.textViewSourceWord);
         sourceWord.setText(progressData.word);
 
-        FragmentGamePlayMain fragment = FragmentGamePlayMain.create(progressData.characterGrid);
+        final FragmentGamePlayMain fragment = FragmentGamePlayMain.create(progressData.characterGrid);
+
+        Button showHintButton = (Button) getView().findViewById(R.id.buttonShowHint);
+        showHintButton.setOnClickListener(new View.OnClickListener() {
+            int hintCount = 1;
+            @Override
+            public void onClick(View v) {
+                String[] location = progressData.wordLocations.keySet().iterator().next().split(",");
+                if (hintCount == 1) {
+                    fragment.highLightCell(Integer.parseInt(location[0]), Integer.parseInt(location[1]));
+                    Log.e("shaneTest", "hint1X = " + location[0] + "; hint1Y = " + location[1]);
+                    hintCount++;
+                }else{
+                    fragment.highLightCell(Integer.parseInt(location[location.length-2]), Integer.parseInt(location[location.length-1]));
+                    Log.e("shaneTest", "hint12 = " + location[location.length-2] + "; hint2Y = " + location[location.length-1]);
+                    hintCount = 1;
+                }
+
+            }
+        });
+
         fragment.setOnWordSelectedListen(new FragmentGamePlayMain.OnWordSelectedListener() {
             @Override
             public boolean onWordSelected(String word) {

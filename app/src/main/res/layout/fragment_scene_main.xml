@@ -12,6 +12,12 @@
         android:textSize="22sp"
         android:text="@string/sourceWord"/>
 
+    <Button
+        android:id="@+id/buttonShowHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/showHint"/>
+
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
