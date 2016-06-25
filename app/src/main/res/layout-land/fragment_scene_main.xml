@@ -31,8 +31,8 @@
 
         <FrameLayout
             android:id="@+id/frameLayout"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="@dimen/game_scene_fragment_width"
+            android:layout_height="@dimen/game_scene_fragment_width"
             android:layout_gravity="center">
 
         </FrameLayout>
