@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.rudolf.shane.duolingochallenger.R;
 import com.rudolf.shane.duolingochallenger.base.BaseFragment;
 
 /**
@@ -16,7 +17,11 @@ public class FragmentSceneMain extends BaseFragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getActivity().getSupportFragmentManager().beginTransaction().add(android.R.id.content, new FragmentGamePlayMain()).commit();
-        return super.onCreateView(inflater, container, savedInstanceState);
+        View rootView = inflater.inflate(R.layout.fragment_scene_main, container, false);
+
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FragmentGamePlayMain()).commit();
+
+
+        return rootView;
     }
 }

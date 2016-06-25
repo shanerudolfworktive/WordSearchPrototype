@@ -70,7 +70,6 @@ public class FragmentGamePlayMain extends BaseFragment{
                     clearSelection();
                 }else if (event.getAction() == MotionEvent.ACTION_MOVE){
                     TextView endPointTextView = getIntersectedTextView(point);
-                    if (endPointTextView == null || endPointTextView == startTextView) return true;
                     Coor endCoor = textViewToCoorMap.get(endPointTextView);
                     if (endCoor.x == startCoor.x){//highlight vertical
                         clearSelection();
@@ -98,10 +97,7 @@ public class FragmentGamePlayMain extends BaseFragment{
                             coorToTextViewMap.get(new Coor(startX--, startY++)).setBackgroundResource(R.color.colorPrimaryDark);
                         }
                     }
-
-
                 }
-
                 return true;
             }
         });
