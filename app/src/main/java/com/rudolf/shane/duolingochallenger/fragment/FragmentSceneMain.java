@@ -84,11 +84,9 @@ public class FragmentSceneMain extends BaseFragment{
                 String[] location = progressData.wordLocations.keySet().iterator().next().split(",");
                 if (hintCount == 1) {
                     fragment.highLightCell(Integer.parseInt(location[0]), Integer.parseInt(location[1]));
-                    Log.e("shaneTest", "hint1X = " + location[0] + "; hint1Y = " + location[1]);
                     hintCount++;
                 }else{
-                    fragment.highLightCell(Integer.parseInt(location[location.length-2]), Integer.parseInt(location[location.length-1]));
-                    Log.e("shaneTest", "hint12 = " + location[location.length-2] + "; hint2Y = " + location[location.length-1]);
+                    fragment.highLightCell(Integer.parseInt(location[location.length - 2]), Integer.parseInt(location[location.length - 1]));
                     hintCount = 1;
                 }
 
@@ -112,6 +110,7 @@ public class FragmentSceneMain extends BaseFragment{
                 if (progressData.wordLocations.isEmpty()) {
                     displayGmaeData(progress+1);
                 }
+                Log.e("shaneTest", "foundCorrect = " + foundCorrect);
                 return foundCorrect;
             }
         });

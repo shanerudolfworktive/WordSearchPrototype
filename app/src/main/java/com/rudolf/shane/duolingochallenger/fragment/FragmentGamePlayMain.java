@@ -86,10 +86,8 @@ public class FragmentGamePlayMain extends BaseFragment{
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Point point = new Point(event.getRawX(), event.getRawY());
-                if (getIntersectedTextView(point) == null){
-                    return true;
-                }
-                if (event.getAction() == MotionEvent.ACTION_DOWN){
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN && getIntersectedTextView(point) != null){
                     startPoint = point;
                     startTextView = getIntersectedTextView(point);
                     startCoor = textViewToCoorMap.get(startTextView);
@@ -106,7 +104,7 @@ public class FragmentGamePlayMain extends BaseFragment{
                         }
                     }
                     clearSelectedView();
-                }else if (event.getAction() == MotionEvent.ACTION_MOVE){
+                }else if (event.getAction() == MotionEvent.ACTION_MOVE && getIntersectedTextView(point) != null){
                     TextView endPointTextView = getIntersectedTextView(point);
                     Coor endCoor = textViewToCoorMap.get(endPointTextView);
                     if (endCoor.x == startCoor.x){//highlight vertical
