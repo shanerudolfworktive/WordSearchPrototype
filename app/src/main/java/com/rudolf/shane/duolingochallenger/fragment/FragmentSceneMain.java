@@ -63,9 +63,15 @@ public class FragmentSceneMain extends BaseFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_scene_main, container, false);
-
+        Log.e("shaneTest", "oncreateView");
         VolleyHelper.getInstance(getActivity()).addToRequestQueue(stringRequest);
         return rootView;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e("shaneTest", "oncreateView");
     }
 
     private void displayGmaeData(final int progress){

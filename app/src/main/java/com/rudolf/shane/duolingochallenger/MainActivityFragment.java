@@ -2,6 +2,7 @@ package com.rudolf.shane.duolingochallenger;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +15,12 @@ import com.rudolf.shane.duolingochallenger.fragment.FragmentSceneMain;
  */
 public class MainActivityFragment extends BaseFragment {
 
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.e("shaneTest", "onCreate");
         getActivity().getSupportFragmentManager().beginTransaction().add(android.R.id.content, new FragmentSceneMain()).commit();
     }
 

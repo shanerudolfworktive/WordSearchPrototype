@@ -70,6 +70,12 @@ public class FragmentGamePlayMain extends BaseFragment{
             rootView.addView(row);
         }
 
+        Log.e("shaneTest", "coorToTextViewMap.size()= " + coorToTextViewMap.size());
+        Log.e("shaneTest", "textViewToCoorMap.size()= " + textViewToCoorMap.size());
+
+        //recover orientation during rotation;
+        for (TextView textView: correctTextViewSet) textView.setBackgroundResource(R.color.colorPrimaryDark);
+
         rootView.setOnTouchListener(new View.OnTouchListener() {
             Point startPoint;
             TextView startTextView;
