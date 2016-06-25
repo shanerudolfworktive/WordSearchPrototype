@@ -2,6 +2,7 @@ package com.rudolf.shane.duolingochallenger.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -61,7 +62,10 @@ public class FragmentGamePlayMain extends BaseFragment{
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Point point = new Point(event.getRawX(), event.getRawY());
-
+                if (getIntersectedTextView(point) == null){
+                    Log.e("shaneTest", "getIntersectedTextView return null");
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_DOWN){
                     startPoint = point;
                     startTextView = getIntersectedTextView(point);

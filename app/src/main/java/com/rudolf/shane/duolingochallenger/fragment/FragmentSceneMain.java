@@ -50,6 +50,7 @@ public class FragmentSceneMain extends BaseFragment{
                 Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+        requestToCancelOnDestroy.add(stringRequest);
         VolleyHelper.getInstance(getActivity()).addToRequestQueue(stringRequest);
 
 
