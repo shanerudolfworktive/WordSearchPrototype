@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -20,6 +21,8 @@ import com.rudolf.shane.duolingochallenger.utils.Constants;
 import com.rudolf.shane.duolingochallenger.volley.VolleyHelper;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by shane on 6/24/16.
@@ -28,10 +31,12 @@ public class FragmentSceneMain extends BaseFragment{
 
     private ArrayList<GameDisplayResponseModel> gameDataArrayList = new ArrayList<>();
 
+    StringRequest stringRequest;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, Constants.URL_GAME_DATA, new Response.Listener<String>() {
+        stringRequest = new StringRequest(Request.Method.GET, Constants.URL_GAME_DATA, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 String lines[] = response.split("\\r?\\n");//split by new line
@@ -41,19 +46,7 @@ public class FragmentSceneMain extends BaseFragment{
                     Log.e("shaneTest", "l=" + l);
                     gameDataArrayList.add(model);
                 }
-
-                FragmentGamePlayMain fragment = FragmentGamePlayMain.create(gameDataArrayList.get(0).characterGrid);
-                fragment.setOnWordSelectedListen(new FragmentGamePlayMain.OnWordSelectedListener() {
-                    @Override
-                    public boolean onWordSelected(String word) {
-                        for (String correctWord: gameDataArrayList.get(0).wordLocations.values()) {
-                            if (word.equals(correctWord)) return true;
-                        }
-                        return false;
-                    }
-                });
-
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, fragment).commit();
+                displayGmaeData(0);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -63,7 +56,6 @@ public class FragmentSceneMain extends BaseFragment{
             }
         });
         requestToCancelOnDestroy.add(stringRequest);
-        VolleyHelper.getInstance(getActivity()).addToRequestQueue(stringRequest);
     }
 
     @Nullable
@@ -71,6 +63,36 @@ public class FragmentSceneMain extends BaseFragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_scene_main, container, false);
 
+        VolleyHelper.getInstance(getActivity()).addToRequestQueue(stringRequest);
         return rootView;
+    }
+
+    private void displayGmaeData(final int progress){
+        final GameDisplayResponseModel progressData = gameDataArrayList.get(progress);
+        TextView sourceWord = (TextView) getView().findViewById(R.id.textViewSourceWord);
+        sourceWord.setText(progressData.word);
+
+        FragmentGamePlayMain fragment = FragmentGamePlayMain.create(progressData.characterGrid);
+        fragment.setOnWordSelectedListen(new FragmentGamePlayMain.OnWordSelectedListener() {
+            @Override
+            public boolean onWordSelected(String word) {
+                boolean foundCorrect = false;
+
+                for(Iterator<Map.Entry<String,String>> iterator = progressData.wordLocations.entrySet().iterator(); iterator.hasNext();){
+                    Map.Entry<String,String> entry = iterator.next();
+                    if (entry.getValue().equals(word)){
+                        foundCorrect = true;
+                        iterator.remove();
+                        break;
+                    }
+                }
+
+                if (progressData.wordLocations.isEmpty()) {
+                    displayGmaeData(progress+1);
+                }
+                return foundCorrect;
+            }
+        });
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, fragment).commit();
     }
 }

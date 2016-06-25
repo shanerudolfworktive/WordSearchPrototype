@@ -5,9 +5,12 @@
     android:orientation="vertical">
 
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/textViewSourceWord"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Text View"/>
+        android:layout_gravity="center_horizontal"
+        android:textSize="22sp"
+        android:text="@string/sourceWord"/>
 
     <FrameLayout
         android:id="@+id/frameLayout"
