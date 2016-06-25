@@ -23,12 +23,19 @@
             android:text="@string/showHint"/>
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/frameLayout"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:gravity="center">
 
-    </FrameLayout>
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_gravity="center">
 
+        </FrameLayout>
+
+    </LinearLayout>
 </LinearLayout>
