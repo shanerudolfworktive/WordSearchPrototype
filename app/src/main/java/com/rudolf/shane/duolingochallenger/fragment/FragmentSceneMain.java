@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +32,8 @@ public class FragmentSceneMain extends BaseFragment{
     private ArrayList<GameDisplayResponseModel> gameDataArrayList = new ArrayList<>();
 
     StringRequest stringRequest;
+    View.OnClickListener hintOnClickListener;
+    TextView sourceWord;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,27 +64,28 @@ public class FragmentSceneMain extends BaseFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_scene_main, container, false);
-        Log.e("shaneTest", "oncreateView");
         VolleyHelper.getInstance(getActivity()).addToRequestQueue(stringRequest);
+
+        //restore states
+        if (hintOnClickListener != null) rootView.findViewById(R.id.buttonShowHint).setOnClickListener(hintOnClickListener);
+        if (sourceWord != null) {
+            TextView textView = (TextView) rootView.findViewById(R.id.textViewSourceWord);
+            textView.setText(sourceWord.getText().toString());
+            sourceWord = textView;
+        }
         return rootView;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.e("shaneTest", "oncreateView");
-    }
+
 
     private void displayGmaeData(final int progress){
         if (progress >= gameDataArrayList.size()) return;
         final GameDisplayResponseModel progressData = gameDataArrayList.get(progress);
-        TextView sourceWord = (TextView) getView().findViewById(R.id.textViewSourceWord);
+        sourceWord = (TextView) getView().findViewById(R.id.textViewSourceWord);
         sourceWord.setText(progressData.word);
 
         final FragmentGamePlayMain fragment = FragmentGamePlayMain.create(progressData.characterGrid);
-
-        Button showHintButton = (Button) getView().findViewById(R.id.buttonShowHint);
-        showHintButton.setOnClickListener(new View.OnClickListener() {
+        hintOnClickListener = new View.OnClickListener() {
             int hintCount = 1;
             @Override
             public void onClick(View v) {
@@ -97,7 +99,8 @@ public class FragmentSceneMain extends BaseFragment{
                 }
 
             }
-        });
+        };
+        getView().findViewById(R.id.buttonShowHint).setOnClickListener(hintOnClickListener);
 
         fragment.setOnWordSelectedListen(new FragmentGamePlayMain.OnWordSelectedListener() {
             @Override
