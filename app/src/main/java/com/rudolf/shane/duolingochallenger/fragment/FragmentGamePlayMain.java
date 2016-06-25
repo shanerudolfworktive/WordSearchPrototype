@@ -25,11 +25,14 @@ import java.util.LinkedHashSet;
  */
 public class FragmentGamePlayMain extends BaseFragment{
     ArrayList<ArrayList<String>> gamePadData;
-    HashMap<Coor, TextView> coorToTextViewMap = new HashMap<>();
-    HashMap<TextView, Coor> textViewToCoorMap = new HashMap<>();
+//    HashMap<Coor, TextView> coorToTextViewMap = new HashMap<>();
+//    HashMap<TextView, Coor> textViewToCoorMap = new HashMap<>();
+    HashMap<Coor, CoordinatedTextView> coordinatedTextViewMap = new HashMap<>();
+
+
     OnWordSelectedListener onWordSelectedListener;
-    LinkedHashSet<TextView> selectedTextViewSet = new LinkedHashSet<>();
-    HashSet<TextView> correctTextViewSet = new HashSet<>();
+    LinkedHashSet<CoordinatedTextView> selectedCoordinatedTextViewSet = new LinkedHashSet<>();
+    HashSet<CoordinatedTextView> correctCoordinatedTextViewSet = new HashSet<>();
 
     //clone constructor
     public static FragmentGamePlayMain create(ArrayList<ArrayList<String>> gamePadData){
@@ -43,10 +46,11 @@ public class FragmentGamePlayMain extends BaseFragment{
     }
 
     public void highLightCell(int x, int y){
-        TextView textView = coorToTextViewMap.get(new Coor(x,y));
-        if (textView == null) return;
-        textView.setBackgroundResource(R.color.colorPrimaryDark);
-        correctTextViewSet.add(textView);
+        CoordinatedTextView coordinatedTextView = coordinatedTextViewMap.get(new Coor(x, y));
+        if (coordinatedTextView == null) return;
+
+        coordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
+        correctCoordinatedTextViewSet.add(coordinatedTextView);
     }
 
     @Nullable
@@ -64,27 +68,22 @@ public class FragmentGamePlayMain extends BaseFragment{
                 textView.setText(gamePadData.get(i).get(j));
                 row.addView(textView);
                 Coor coor = new Coor(j, i);
-                coorToTextViewMap.put(coor, textView);
-                textViewToCoorMap.put(textView,coor);
+                coordinatedTextViewMap.put(coor, new CoordinatedTextView(textView, coor));
             }
             rootView.addView(row);
         }
 
-        Log.e("shaneTest", "coorToTextViewMap.size()= " + coorToTextViewMap.size());
-        Log.e("shaneTest", "textViewToCoorMap.size()= " + textViewToCoorMap.size());
-
         //recover orientation during rotation;
-        for (TextView textView: correctTextViewSet) textView.setBackgroundResource(R.color.colorPrimaryDark);
+        for (CoordinatedTextView coordinatedTextView: correctCoordinatedTextViewSet) coordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
 
         rootView.setOnTouchListener(new View.OnTouchListener() {
             Point startPoint;
-            TextView startTextView;
+            CoordinatedTextView startCoordinatedTextView;
             Coor startCoor;
-
             private void clearSelectedView(){
-                for (Iterator<TextView> iterator = selectedTextViewSet.iterator(); iterator.hasNext();) {
-                    TextView textView = iterator.next();
-                    if (!correctTextViewSet.contains(textView)) textView.setBackgroundResource(R.drawable.drawable_game_button_background);
+                for (Iterator<CoordinatedTextView> iterator = selectedCoordinatedTextViewSet.iterator(); iterator.hasNext();) {
+                    CoordinatedTextView coordinatedTextView = iterator.next();
+                    if (!correctCoordinatedTextViewSet.contains(coordinatedTextView)) coordinatedTextView.textView.setBackgroundResource(R.drawable.drawable_game_button_background);
                     iterator.remove();
                 }
             }
@@ -95,37 +94,37 @@ public class FragmentGamePlayMain extends BaseFragment{
 
                 if (event.getAction() == MotionEvent.ACTION_DOWN && getIntersectedTextView(point) != null){
                     startPoint = point;
-                    startTextView = getIntersectedTextView(point);
-                    startCoor = textViewToCoorMap.get(startTextView);
-                    startTextView.setBackgroundResource(R.color.colorPrimaryDark);
+                    startCoordinatedTextView = getIntersectedTextView(point);
+                    startCoor = startCoordinatedTextView.coor;
+                    startCoordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
                 }else if (event.getAction()==MotionEvent.ACTION_UP){
                     StringBuilder sb= new StringBuilder();
-                    for (TextView textView: selectedTextViewSet) {
-                        sb.append(textView.getText().toString());
+                    for (CoordinatedTextView coordinatedTextView: selectedCoordinatedTextViewSet) {
+                        sb.append(coordinatedTextView.textView.getText().toString());
                     }
                     Log.e("shaneTest", sb.toString());
                     if(onWordSelectedListener!=null) {
                         if (onWordSelectedListener.onWordSelected(sb.toString())){
-                            for (TextView textView: selectedTextViewSet) correctTextViewSet.add(textView);
+                            for (CoordinatedTextView coordinatedTextView: selectedCoordinatedTextViewSet) correctCoordinatedTextViewSet.add(coordinatedTextView);
                         }
                     }
                     clearSelectedView();
                 }else if (event.getAction() == MotionEvent.ACTION_MOVE && getIntersectedTextView(point) != null){
-                    TextView endPointTextView = getIntersectedTextView(point);
-                    Coor endCoor = textViewToCoorMap.get(endPointTextView);
+                    CoordinatedTextView endPointCoordinatedTextView = getIntersectedTextView(point);
+                    Coor endCoor = endPointCoordinatedTextView.coor;
                     if (endCoor.x == startCoor.x){//highlight vertical
                         clearSelectedView();
                         for (int y = Math.min(startCoor.y, endCoor.y); y<=Math.max(startCoor.y, endCoor.y); y++) {
-                            TextView selectedTextView = coorToTextViewMap.get(new Coor(startCoor.x, y));
-                            selectedTextViewSet.add(selectedTextView);
-                            selectedTextView.setBackgroundResource(R.color.colorPrimaryDark);
+                            CoordinatedTextView selectedCoordinatedTextView = coordinatedTextViewMap.get(new Coor(startCoor.x, y));
+                            selectedCoordinatedTextViewSet.add(selectedCoordinatedTextView);
+                            selectedCoordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
                         }
                     }else if (endCoor.y == startCoor.y){//highlight horizontal
                         clearSelectedView();
                         for (int x = Math.min(startCoor.x, endCoor.x); x<=Math.max(startCoor.x, endCoor.x); x++) {
-                            TextView selectedTextView = coorToTextViewMap.get(new Coor(x, startCoor.y));
-                            selectedTextViewSet.add(selectedTextView);
-                            selectedTextView.setBackgroundResource(R.color.colorPrimaryDark);
+                            CoordinatedTextView selectedCoordinatedTextView = coordinatedTextViewMap.get(new Coor(x, startCoor.y));
+                            selectedCoordinatedTextViewSet.add(selectedCoordinatedTextView);
+                            selectedCoordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
                         }
                     }else if (((float)startCoor.y - (float)endCoor.y)/((float)startCoor.x - (float)endCoor.x) == 1f){//highlight positive slope
                         clearSelectedView();
@@ -133,18 +132,18 @@ public class FragmentGamePlayMain extends BaseFragment{
                         int startY = Math.min(startCoor.y, endCoor.y);
 
                         while (startX<=Math.max(startCoor.x, endCoor.x)){
-                            TextView selectedTextView = coorToTextViewMap.get(new Coor(startX++, startY++));
-                            selectedTextViewSet.add(selectedTextView);
-                            selectedTextView.setBackgroundResource(R.color.colorPrimaryDark);
+                            CoordinatedTextView selectedCoordinatedTextView = coordinatedTextViewMap.get(new Coor(startX++, startY++));
+                            selectedCoordinatedTextViewSet.add(selectedCoordinatedTextView);
+                            selectedCoordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
                         }
                     }else if (((float)startCoor.y - (float)endCoor.y)/((float)startCoor.x - (float)endCoor.x) == -1f){//highlight negative slope
                         clearSelectedView();
                         int startX = Math.max(startCoor.x, endCoor.x);
                         int startY = Math.min(startCoor.y, endCoor.y);
                         while (startX>=Math.min(startCoor.x, endCoor.x)){
-                            TextView selectedTextView = coorToTextViewMap.get(new Coor(startX--, startY++));
-                            selectedTextViewSet.add(selectedTextView);
-                            selectedTextView.setBackgroundResource(R.color.colorPrimaryDark);
+                            CoordinatedTextView selectedCoordinatedTextView = coordinatedTextViewMap.get(new Coor(startX--, startY++));
+                            selectedCoordinatedTextViewSet.add(selectedCoordinatedTextView);
+                            selectedCoordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
                         }
                     }
                 }
@@ -154,9 +153,9 @@ public class FragmentGamePlayMain extends BaseFragment{
         return rootView;
     }
 
-    protected TextView getIntersectedTextView(Point point){
-        for (TextView textView: coorToTextViewMap.values()) {
-            if (isPointInsideView(point, textView)) return textView;
+    protected CoordinatedTextView getIntersectedTextView(Point point){
+        for (CoordinatedTextView coordinatedTextView: coordinatedTextViewMap.values()) {
+            if (isPointInsideView(point, coordinatedTextView.textView)) return coordinatedTextView;
         }
         return null;
     }
@@ -176,6 +175,21 @@ public class FragmentGamePlayMain extends BaseFragment{
 
     public interface OnWordSelectedListener{
         boolean onWordSelected(String word);
+    }
+
+    private class CoordinatedTextView{
+        TextView textView;
+        Coor coor;
+
+        public CoordinatedTextView(TextView textView, int x, int y){
+            this.textView = textView;
+            this.coor = new Coor(x,y);
+        }
+
+        public CoordinatedTextView(TextView textView, Coor coor){
+            this.textView = textView;
+            this.coor = coor;
+        }
     }
 
     private class Point{
