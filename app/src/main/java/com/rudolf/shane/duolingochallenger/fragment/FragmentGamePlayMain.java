@@ -2,7 +2,6 @@ package com.rudolf.shane.duolingochallenger.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -46,7 +45,7 @@ public class FragmentGamePlayMain extends BaseFragment{
         CoordinatedTextView coordinatedTextView = coordinatedTextViewMap.get(new Coor(x, y));
         if (coordinatedTextView == null) return;
 
-        coordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
+        coordinatedTextView.textView.setBackgroundResource(R.drawable.drawable_game_button_selected_background);
         coordinatedTextView.isCorrectedTextView = true;
         correctCoordinatedTextViewSet.add(coordinatedTextView);
     }
@@ -78,7 +77,7 @@ public class FragmentGamePlayMain extends BaseFragment{
         }
 
         //recover orientation during rotation;
-        for (CoordinatedTextView coordinatedTextView: correctCoordinatedTextViewSet) coordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
+        for (CoordinatedTextView coordinatedTextView: correctCoordinatedTextViewSet) coordinatedTextView.textView.setBackgroundResource(R.drawable.drawable_game_button_selected_background);
 
         rootView.setOnTouchListener(new View.OnTouchListener() {
             Point startPoint;
@@ -100,13 +99,13 @@ public class FragmentGamePlayMain extends BaseFragment{
                     startPoint = point;
                     startCoordinatedTextView = getIntersectedTextView(point);
                     startCoor = startCoordinatedTextView.coor;
-                    startCoordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
+                    startCoordinatedTextView.textView.setBackgroundResource(R.drawable.drawable_game_button_selected_background);
+                    selectedCoordinatedTextViewSet.add(startCoordinatedTextView);
                 }else if (event.getAction()==MotionEvent.ACTION_UP){
                     StringBuilder sb= new StringBuilder();
                     for (CoordinatedTextView coordinatedTextView: selectedCoordinatedTextViewSet) {
                         sb.append(coordinatedTextView.textView.getText().toString());
                     }
-                    Log.e("shaneTest", sb.toString());
                     if(onWordSelectedListener!=null) {
                         if (onWordSelectedListener.onWordSelected(sb.toString())){
                             for (CoordinatedTextView coordinatedTextView: selectedCoordinatedTextViewSet) {
@@ -124,14 +123,14 @@ public class FragmentGamePlayMain extends BaseFragment{
                         for (int y = Math.min(startCoor.y, endCoor.y); y<=Math.max(startCoor.y, endCoor.y); y++) {
                             CoordinatedTextView selectedCoordinatedTextView = coordinatedTextViewMap.get(new Coor(startCoor.x, y));
                             selectedCoordinatedTextViewSet.add(selectedCoordinatedTextView);
-                            selectedCoordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
+                            selectedCoordinatedTextView.textView.setBackgroundResource(R.drawable.drawable_game_button_selected_background);
                         }
                     }else if (endCoor.y == startCoor.y){//highlight horizontal
                         clearSelectedView();
                         for (int x = Math.min(startCoor.x, endCoor.x); x<=Math.max(startCoor.x, endCoor.x); x++) {
                             CoordinatedTextView selectedCoordinatedTextView = coordinatedTextViewMap.get(new Coor(x, startCoor.y));
                             selectedCoordinatedTextViewSet.add(selectedCoordinatedTextView);
-                            selectedCoordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
+                            selectedCoordinatedTextView.textView.setBackgroundResource(R.drawable.drawable_game_button_selected_background);
                         }
                     }else if (((float)startCoor.y - (float)endCoor.y)/((float)startCoor.x - (float)endCoor.x) == 1f){//highlight positive slope
                         clearSelectedView();
@@ -141,7 +140,7 @@ public class FragmentGamePlayMain extends BaseFragment{
                         while (startX<=Math.max(startCoor.x, endCoor.x)){
                             CoordinatedTextView selectedCoordinatedTextView = coordinatedTextViewMap.get(new Coor(startX++, startY++));
                             selectedCoordinatedTextViewSet.add(selectedCoordinatedTextView);
-                            selectedCoordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
+                            selectedCoordinatedTextView.textView.setBackgroundResource(R.drawable.drawable_game_button_selected_background);
                         }
                     }else if (((float)startCoor.y - (float)endCoor.y)/((float)startCoor.x - (float)endCoor.x) == -1f){//highlight negative slope
                         clearSelectedView();
@@ -150,7 +149,7 @@ public class FragmentGamePlayMain extends BaseFragment{
                         while (startX>=Math.min(startCoor.x, endCoor.x)){
                             CoordinatedTextView selectedCoordinatedTextView = coordinatedTextViewMap.get(new Coor(startX--, startY++));
                             selectedCoordinatedTextViewSet.add(selectedCoordinatedTextView);
-                            selectedCoordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
+                            selectedCoordinatedTextView.textView.setBackgroundResource(R.drawable.drawable_game_button_selected_background);
                         }
                     }
                 }

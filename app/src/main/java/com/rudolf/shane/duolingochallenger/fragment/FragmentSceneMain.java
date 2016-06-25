@@ -46,7 +46,16 @@ public class FragmentSceneMain extends BaseFragment{
                     GameDisplayResponseModel model = new Gson().fromJson(l, GameDisplayResponseModel.class);
                     gameDataArrayList.add(model);
                 }
-                displayGmaeData(0);
+                if (isResumed()){
+                    displayGmaeData(0);
+                }else {
+                    setOnResumeListener(new OnResumeListener() {
+                        @Override
+                        public void onResume() {
+                            displayGmaeData(0);
+                        }
+                    });
+                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -72,8 +81,6 @@ public class FragmentSceneMain extends BaseFragment{
         }
         return rootView;
     }
-
-
 
     private void displayGmaeData(final int progress){
         if (progress >= gameDataArrayList.size()) return;
