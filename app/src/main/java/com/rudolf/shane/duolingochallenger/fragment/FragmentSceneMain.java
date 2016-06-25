@@ -52,8 +52,6 @@ public class FragmentSceneMain extends BaseFragment{
         });
         requestToCancelOnDestroy.add(stringRequest);
         VolleyHelper.getInstance(getActivity()).addToRequestQueue(stringRequest);
-
-
     }
 
     @Nullable

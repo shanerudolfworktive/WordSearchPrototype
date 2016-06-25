@@ -21,9 +21,7 @@ import java.util.HashMap;
  * Created by shane on 6/24/16.
  */
 public class FragmentGamePlayMain extends BaseFragment{
-
     ArrayList<ArrayList<String>> gamePadData;
-
     HashMap<Coor, TextView> coorToTextViewMap = new HashMap<>();
     HashMap<TextView, Coor> textViewToCoorMap = new HashMap<>();
 
@@ -59,6 +57,7 @@ public class FragmentGamePlayMain extends BaseFragment{
             Point startPoint;
             TextView startTextView;
             Coor startCoor;
+            StringBuilder stringBuilder;
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Point point = new Point(event.getRawX(), event.getRawY());
@@ -133,6 +132,10 @@ public class FragmentGamePlayMain extends BaseFragment{
         } else {
             return false;
         }
+    }
+
+    public interface OnWordSelectedListener{
+        void onWordSelected(String word);
     }
 
     private class Point{
