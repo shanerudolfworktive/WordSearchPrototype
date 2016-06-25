@@ -2,7 +2,6 @@ package com.rudolf.shane.duolingochallenger.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,7 +44,7 @@ public class FragmentGamePlayMain extends BaseFragment{
 
             for (int j = 0; j < gamePadData[0].length; j++ ){
                 TextView textView = (TextView) inflater.inflate(R.layout.text_view_game_pad, rootView, false);
-                textView.setText(gamePadData[i][j]);
+                textView.setText("" + i+","+j);
                 row.addView(textView);
                 Coor coor = new Coor(i, j);
                 coorToTextViewMap.put(coor, textView);
@@ -73,7 +72,6 @@ public class FragmentGamePlayMain extends BaseFragment{
                     TextView endPointTextView = getIntersectedTextView(point);
                     if (endPointTextView == null || endPointTextView == startTextView) return true;
                     Coor endCoor = textViewToCoorMap.get(endPointTextView);
-                    Log.e("shaneTest", "size = " + textViewToCoorMap.size() + "; endPointTextView = " + endPointTextView + "; touchDownTextView = " + startTextView);
                     if (endCoor.x == startCoor.x){//highlight vertical
                         clearSelection();
                         for (int y = Math.min(startCoor.y, endCoor.y); y<=Math.max(startCoor.y, endCoor.y); y++) {
@@ -92,16 +90,13 @@ public class FragmentGamePlayMain extends BaseFragment{
                         while (startX<=Math.max(startCoor.x, endCoor.x)){
                             coorToTextViewMap.get(new Coor(startX++, startY++)).setBackgroundResource(R.color.colorPrimaryDark);
                         }
-                    }else if ((startCoor.y - endCoor.y)/(startCoor.x - endCoor.x) == -1){//highlight negative slope
-//                        clearSelection();
-//                        int startX = Math.min(startCoor.x, endCoor.x);
-//                        int startY = Math.max(startCoor.y, endCoor.y);
-//                        TextView selectedTex = coorToTextViewMap.get(new Coor(startX++, startY++));
-//
-//                        while (selectedTex !=null){
-//                            selectedTex.setBackgroundResource(R.color.colorPrimaryDark);
-//                            selectedTex = coorToTextViewMap.get(new Coor(startX++, startY++));
-//                        }
+                    }else if (((float)startCoor.y - (float)endCoor.y)/((float)startCoor.x - (float)endCoor.x) == -1f){//highlight negative slope
+                        clearSelection();
+                        int startX = Math.max(startCoor.x, endCoor.x);
+                        int startY = Math.min(startCoor.y, endCoor.y);
+                        while (startX>=Math.min(startCoor.x, endCoor.x)){
+                            coorToTextViewMap.get(new Coor(startX--, startY++)).setBackgroundResource(R.color.colorPrimaryDark);
+                        }
                     }
 
 
