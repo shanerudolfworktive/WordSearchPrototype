@@ -25,10 +25,7 @@ import java.util.LinkedHashSet;
  */
 public class FragmentGamePlayMain extends BaseFragment{
     ArrayList<ArrayList<String>> gamePadData;
-//    HashMap<Coor, TextView> coorToTextViewMap = new HashMap<>();
-//    HashMap<TextView, Coor> textViewToCoorMap = new HashMap<>();
     HashMap<Coor, CoordinatedTextView> coordinatedTextViewMap = new HashMap<>();
-
 
     OnWordSelectedListener onWordSelectedListener;
     LinkedHashSet<CoordinatedTextView> selectedCoordinatedTextViewSet = new LinkedHashSet<>();
@@ -50,6 +47,7 @@ public class FragmentGamePlayMain extends BaseFragment{
         if (coordinatedTextView == null) return;
 
         coordinatedTextView.textView.setBackgroundResource(R.color.colorPrimaryDark);
+        coordinatedTextView.isCorrectedTextView = true;
         correctCoordinatedTextViewSet.add(coordinatedTextView);
     }
 
@@ -57,7 +55,7 @@ public class FragmentGamePlayMain extends BaseFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_game_play_main, container, false);
-
+        correctCoordinatedTextViewSet.clear();
         for (int i = 0; i < gamePadData.size(); i++) {
 
             LinearLayout row = new LinearLayout(getActivity());
@@ -68,7 +66,13 @@ public class FragmentGamePlayMain extends BaseFragment{
                 textView.setText(gamePadData.get(i).get(j));
                 row.addView(textView);
                 Coor coor = new Coor(j, i);
-                coordinatedTextViewMap.put(coor, new CoordinatedTextView(textView, coor));
+                CoordinatedTextView coordinatedTextView = new CoordinatedTextView(textView, coor);
+                if (coordinatedTextViewMap.get(coor) != null && coordinatedTextViewMap.get(coor).isCorrectedTextView){
+                    coordinatedTextView.isCorrectedTextView = true;
+                    correctCoordinatedTextViewSet.add(coordinatedTextView);
+                }
+
+                coordinatedTextViewMap.put(coor, coordinatedTextView);
             }
             rootView.addView(row);
         }
@@ -105,7 +109,10 @@ public class FragmentGamePlayMain extends BaseFragment{
                     Log.e("shaneTest", sb.toString());
                     if(onWordSelectedListener!=null) {
                         if (onWordSelectedListener.onWordSelected(sb.toString())){
-                            for (CoordinatedTextView coordinatedTextView: selectedCoordinatedTextViewSet) correctCoordinatedTextViewSet.add(coordinatedTextView);
+                            for (CoordinatedTextView coordinatedTextView: selectedCoordinatedTextViewSet) {
+                                coordinatedTextView.isCorrectedTextView = true;
+                                correctCoordinatedTextViewSet.add(coordinatedTextView);
+                            }
                         }
                     }
                     clearSelectedView();
@@ -180,15 +187,23 @@ public class FragmentGamePlayMain extends BaseFragment{
     private class CoordinatedTextView{
         TextView textView;
         Coor coor;
-
-        public CoordinatedTextView(TextView textView, int x, int y){
-            this.textView = textView;
-            this.coor = new Coor(x,y);
-        }
-
+        public boolean isCorrectedTextView;
         public CoordinatedTextView(TextView textView, Coor coor){
             this.textView = textView;
             this.coor = coor;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) return true;
+            if (!(o instanceof CoordinatedTextView)) return false;
+            CoordinatedTextView c = (CoordinatedTextView) o;
+            return c.coor.x == coor.x && c.coor.y == coor.y;
+        }
+
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(new int[]{coor.x, coor.y});
         }
     }
 
