@@ -2,7 +2,6 @@ package com.rudolf.shane.duolingochallenger.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +44,6 @@ public class FragmentSceneMain extends BaseFragment{
                 gameDataArrayList.clear();
                 for (String l: lines) {
                     GameDisplayResponseModel model = new Gson().fromJson(l, GameDisplayResponseModel.class);
-                    Log.e("shaneTest", "l=" + l);
                     gameDataArrayList.add(model);
                 }
                 displayGmaeData(0);
@@ -53,7 +51,6 @@ public class FragmentSceneMain extends BaseFragment{
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("shaneTest", "error1 = " + error.getMessage());
                 Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -97,7 +94,6 @@ public class FragmentSceneMain extends BaseFragment{
                     fragment.highLightCell(Integer.parseInt(location[location.length - 2]), Integer.parseInt(location[location.length - 1]));
                     hintCount = 1;
                 }
-
             }
         };
         getView().findViewById(R.id.buttonShowHint).setOnClickListener(hintOnClickListener);
@@ -119,7 +115,6 @@ public class FragmentSceneMain extends BaseFragment{
                 if (progressData.wordLocations.isEmpty()) {
                     displayGmaeData(progress+1);
                 }
-                Log.e("shaneTest", "foundCorrect = " + foundCorrect);
                 return foundCorrect;
             }
         });

@@ -15,8 +15,6 @@ import com.rudolf.shane.duolingochallenger.fragment.FragmentSceneMain;
  */
 public class MainActivityFragment extends BaseFragment {
 
-
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
